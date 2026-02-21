@@ -1,0 +1,102 @@
+HD_DATA_TXT 300
+
+outfit
+{
+	name			"Synthwave";
+	default			false;
+
+	mesh
+	{
+		mesh		"Outfits\Haydee\Suit.mesh";
+		skin		"Outfits\Haydee\Suit.skin";
+		material	"Outfits\Synthwave\Suit.mtl";
+
+		common		true;
+		mask		true;
+		visor		true;
+		jacket		true;
+	}
+
+	mesh
+	{
+		mesh		"Outfits\Haydee\Helmet.mesh";
+		skin		"Outfits\Haydee\Helmet.skin";
+		material	"Outfits\Synthwave\Suit.mtl";
+
+		common		true;
+		mask		true;
+		visor		true;
+		jacket		true;
+		
+		slot		"Head" "Haydee";
+	}
+	
+	mesh
+	{
+		mesh		"Outfits\Haydee\Hands.mesh";
+		skin		"Outfits\Haydee\Hands.skin";
+		material	"Outfits\Synthwave\Suit.mtl";
+
+		common		true;
+		mask		true;
+		visor		true;
+		jacket		true;
+
+		slot		"Hands" "Haydee";
+	}
+
+	mesh
+	{
+		mesh		"Outfits\Haydee\Clock.mesh";
+		skin		"Outfits\Haydee\Clock.skin";
+
+		clock		true;
+
+		common		true;
+		mask		true;
+		visor		true;
+		jacket		true;
+	}
+
+	mesh
+	{
+		mesh		"Outfits\Haydee\MaskRobo.mesh";
+		skin		"Outfits\Haydee\MaskRobo.skin";
+		material	"Outfits\Haydee\MaskRobo.mtl";
+
+		mask		true;
+	}
+
+	mesh
+	{
+		mesh		"Outfits\Haydee\Visor.mesh";
+		skin		"Outfits\Haydee\Visor.skin";
+		material	"Items\Visor\Visor.mtl";
+
+		visor		true;
+	}
+	
+	mesh
+	{
+		mesh		"Outfits\Haydee\Vest.mesh";
+		skin		"Outfits\Haydee\Vest.skin";
+		material	"Outfits\Haydee\Vest.mtl";
+
+		common		false;
+		mask		false;
+		visor		false;
+		jacket		true;
+	}
+
+	ragdoll
+	{
+		common		true;
+		mask		true;
+		visor		true;
+		jacket		true;
+
+		ragdoll		"Outfits\Haydee\Haydee.doll";
+	}
+}
+
+
