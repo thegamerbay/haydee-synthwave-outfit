@@ -1,6 +1,12 @@
 # 🌴 Haydee: Synthwave Outfit 🌴
 
+![Haydee Synthwave Outfit Preview](preview.jpg)
+
+🔗 **[Get it on Steam Workshop!](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)**
+
 Bring the vibrant pulse of the 80s into the void. This mod gives **Haydee** a high-contrast, retro-futuristic makeover inspired by the classic Synthwave aesthetic. 
+
+> **About the Game:** This is a custom outfit mod for **[Haydee](https://store.steampowered.com/app/530890/Haydee/)**, a hardcore, old-school metroidvania mixed with third-person shooter and platformer mechanics, known for its challenging puzzles, lack of auto-saves, and its iconic half-human, half-robot protagonist.
 
 The industrial metal is replaced with neon gradients, sunset horizons, and the iconic silhouette of digital palm trees.
 
