@@ -69,12 +69,14 @@ The upload tools are located in the game's editor, not the game itself:
 
 #### 3. Fill in the Uploader Data
 In the uploader window, fill out the following fields:
+- **Mod Content:** At the very top of the upload form, there is a text field with a **Browse** button beneath it. You will use this to build the list of files to upload:
+  1. Click **Browse** and add your mod's main folder (for this mod, select `Outfits/Synthwave`).
+  2. Click **Browse** again and add your `.outfit` definition file (for this mod, select `Outfits/Synthwave.outfit`).
+  *(This ensures you include the full set of files required for the mod to work).*
 - **Title:** The name of your outfit (this will be displayed on Steam).
 - **Description:** A short description of the mod (what it is, special features, etc.).
-- **Folder:** Click the button and select your mod's main folder (for this mod, you select `Outfits/Synthwave`). The editor will grab all files inside it.
-- **Outfit File (if applicable):** Click the button and select your `.outfit` definition file (for this mod, you select `Outfits/Synthwave.outfit`).
-- **Preview:** Select the thumbnail image you prepared in step 1.
 - **Visibility:** It is recommended to set this to **Private** first to verify how everything looks on the Steam page, and change it to **Public** later.
+- **Preview Image:** Select the thumbnail image you prepared in step 1.
 
 Once filled out, click **Upload**. If everything goes well, the status at the bottom will show **"Success"**.
 
