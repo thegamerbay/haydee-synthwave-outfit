@@ -51,7 +51,7 @@ For testing your mod locally in Haydee, **you do not need to pack it into a `.pa
 In fact, during development, it is much easier to use "loose files" (regular folders) to quickly make edits and instantly see the results.
 
 1. Place your files directly into your `...\Haydee\Outfits\` folder in the correct structure.
-2. The game perfectly reads unpacked files from the `Outfits` directory. This allows you to Alt+Tab out of the game, tweak a texture or an `.outfit` config, and check the update immediately in-game!
+2. The game perfectly reads unpacked files from the `Outfits` directory.
 
 ### Publishing to Steam Workshop
 When you are ready to share your outfit, you can upload it directly to the Steam Workshop using the game's built-in tools.
