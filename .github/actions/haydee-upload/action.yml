@@ -1,0 +1,104 @@
+name: "haydee-upload"
+description: "Caches tools, packs a Haydee mod to a .pack file and uploads it to the Steam Workshop"
+
+branding:
+  icon: upload
+  color: orange
+
+inputs:
+  id:
+    description: "Workshop item id (specify 0 if this is a new mod)"
+    required: true
+  folder:
+    description: "Folder name with prepared mod files (e.g. 'Build')"
+    required: true
+  pack_name:
+    description: "Resulting file name (e.g. 'SynthwaveOutfit.pack')"
+    required: true
+  priority:
+    description: "Package priority (base files have priority 1)"
+    required: false
+    default: "2"
+  changelog:
+    description: "Changelog"
+    required: false
+    default: "Automatic update via GitHub Actions"
+
+runs:
+  using: "composite"
+  steps:
+    # 1. Check cache for SteamCMD and game files
+    - name: Cache SteamCMD and Haydee Tools
+      id: cache-haydee
+      uses: actions/cache@v4
+      with:
+        path: |
+          steamcmd
+          haydee_game
+        # If you need to force update the game, just change the key version (e.g., v2)
+        key: haydee-tools-windows-v1
+
+    # 2. Download SteamCMD (executed only if cache is not found)
+    - name: Download and Setup SteamCMD
+      if: steps.cache-haydee.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        Write-Host "Cache not found. Downloading SteamCMD..."
+        Invoke-WebRequest -Uri "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip" -OutFile "steamcmd.zip"
+        Expand-Archive -Path "steamcmd.zip" -DestinationPath "steamcmd" -Force
+        .\steamcmd\steamcmd.exe +quit
+
+    # 3. Download game to get packer.exe (also only on cache miss)
+    - name: Download Haydee (Tools)
+      if: steps.cache-haydee.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        Write-Host "Downloading Haydee game files..."
+        .\steamcmd\steamcmd.exe +force_install_dir "..\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
+
+    # 4. Pack folder into .pack file
+    - name: Run Haydee packer.exe
+      shell: cmd
+      run: |
+        echo Packing folder: ${{ inputs.folder }}
+        (
+        echo ${{ inputs.pack_name }}
+        echo ${{ inputs.priority }}
+        ) | "haydee_game\packer.exe" "${{ inputs.folder }}"
+
+    # 5. Prepare folder for Workshop submission
+    - name: Prepare Workshop Content Folder
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path "workshop_content"
+        Move-Item -Path "${{ inputs.pack_name }}" -Destination "workshop_content\"
+
+    # 6. Generate workshop.vdf manifest
+    - name: Create .vdf file
+      shell: pwsh
+      run: |
+        $vdfContent = @"
+        "workshopitem" {
+          "appid" "530890"
+          "publishedfileid" "${{ inputs.id }}"
+          "contentfolder" "$((Get-Item "workshop_content").FullName)"
+          "changenote" "${{ inputs.changelog }}"
+        }
+        "@
+        Set-Content -Path "workshop.vdf" -Value $vdfContent
+
+    # 7. Upload to Steam Workshop
+    - name: Run SteamCMD to Upload
+      shell: pwsh
+      run: |
+        Write-Host "Uploading to Steam Workshop..."
+        .\steamcmd\steamcmd.exe +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +workshop_build_item "$((Get-Item "workshop.vdf").FullName)" +quit
+
+    # 8. Print errors (if process fails)
+    - name: Print Errors on Failure
+      if: failure()
+      shell: pwsh
+      run: |
+        if (Test-Path ".\steamcmd\logs\stderr.txt") { Get-Content ".\steamcmd\logs\stderr.txt" }
+        if (Test-Path ".\steamcmd\logs\workshop_log.txt") { Get-Content ".\steamcmd\logs\workshop_log.txt" }
+        exit 1
