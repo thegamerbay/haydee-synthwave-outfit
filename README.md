@@ -1,8 +1,18 @@
-# 🌴 Haydee: Synthwave Outfit 🌴
+<div align="center">
+  <img src="preview.jpg" alt="Logo" width="256" height="256">
+  <h1>🌴 Haydee: Synthwave Outfit 🌴</h1>
+  <p><b>A custom synthwave-inspired, retro-futuristic outfit for Haydee.</b></p>
+  
+  [![Steam Workshop](https://img.shields.io/badge/Steam-Workshop-171a21?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)
+  <br/>
+  [![Steam Views](https://img.shields.io/steam/views/3670764079?logo=steam&label=Unique%20Visitors)](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)
+  [![Steam Subscriptions](https://img.shields.io/steam/subscriptions/3670764079?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)
+  [![Steam Favorites](https://img.shields.io/steam/favorites/3670764079?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)
+</div>
 
-![Haydee Synthwave Outfit Preview](preview.jpg)
+<br/>
 
-🔗 **[Get it on Steam Workshop!](https://steamcommunity.com/sharedfiles/filedetails/?id=3670764079)**
+## 📖 Overview
 
 Bring the vibrant pulse of the 80s into the void. This mod gives **Haydee** a high-contrast, retro-futuristic makeover inspired by the classic Synthwave aesthetic. 
 

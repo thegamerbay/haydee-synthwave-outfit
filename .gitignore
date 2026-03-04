@@ -1,0 +1,30 @@
+# JetBrains IDEs
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# General OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+[Tt]humbs.db
+desktop.ini
+
+# Haydee Mod build artifacts
+*.pack
+
+# Backup and temporary files
+*~
+*.bak
+*.swp
+*.swo
+*.tmp
+
+# Common image editors (optional, uncomment if you keep source files outside this repo)
+# *.psd
+# *.xcf
