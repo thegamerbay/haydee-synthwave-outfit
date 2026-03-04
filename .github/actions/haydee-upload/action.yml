@@ -66,10 +66,11 @@ runs:
       shell: cmd
       run: |
         echo Packing folder: ${{ inputs.folder }}
+        cd haydee_game
         (
         echo ${{ inputs.pack_name }}
         echo ${{ inputs.priority }}
-        ) | "haydee_game\packer.exe" "${{ inputs.folder }}"
+        ) | packer.exe "..\\${{ inputs.folder }}"
 
     # 5. Prepare folder for Workshop submission
     - name: Prepare Workshop Content Folder
