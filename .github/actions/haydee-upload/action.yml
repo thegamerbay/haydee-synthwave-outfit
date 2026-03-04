@@ -27,20 +27,20 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # 1. Check cache for SteamCMD and game files
-    - name: Cache SteamCMD and Haydee Tools
-      id: cache-haydee
-      uses: actions/cache@v4
-      with:
-        path: |
-          steamcmd
-          haydee_game
-        # If you need to force update the game, just change the key version (e.g., v2)
-        key: haydee-tools-windows-v1
+    # 1. Check cache for SteamCMD and game files (Temporarily disabled)
+    # - name: Cache SteamCMD and Haydee Tools
+    #   id: cache-haydee
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: |
+    #       steamcmd
+    #       haydee_game
+    #     # If you need to force update the game, just change the key version (e.g., v2)
+    #     key: haydee-tools-windows-v1
 
     # 2. Download SteamCMD (executed only if cache is not found)
     - name: Download and Setup SteamCMD
-      if: steps.cache-haydee.outputs.cache-hit != 'true'
+      # if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
         Write-Host "Cache not found. Downloading SteamCMD..."
@@ -50,7 +50,7 @@ runs:
 
     # 3. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
-      if: steps.cache-haydee.outputs.cache-hit != 'true'
+      # if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
         Write-Host "Downloading Haydee game files..."
