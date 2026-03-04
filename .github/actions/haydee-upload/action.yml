@@ -53,12 +53,12 @@ runs:
       shell: pwsh
       run: .\steamcmd\steamcmd.exe +quit
 
-    # 3. Pre-requisite for packer.exe: Install Visual C++ Redistributable
+    # 3. Pre-requisite for packer.exe (Haydee.dll requires DirectX & VCRedist)
     - name: Install System Dependencies for packer.exe
       shell: pwsh
       run: |
-        Write-Host "Installing Visual C++ Redistributables (vcredist140) via Chocolatey..."
-        choco install vcredist140 -y --no-progress
+        Write-Host "Installing Visual C++ Redistributables (vcredist140) and DirectX via Chocolatey..."
+        choco install vcredist140 directx -y --no-progress
 
     # 4. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
