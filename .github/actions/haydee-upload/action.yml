@@ -27,20 +27,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # 1. Check cache for SteamCMD and game files (Temporarily disabled)
-    # - name: Cache SteamCMD and Haydee Tools
-    #   id: cache-haydee
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: |
-    #       steamcmd
-    #       haydee_game
-    #     # If you need to force update the game, just change the key version (e.g., v2)
-    #     key: haydee-tools-windows-v1
+    # 1. Check cache for SteamCMD and game files
+    - name: Cache SteamCMD and Haydee Tools
+      id: cache-haydee
+      uses: actions/cache@v4
+      with:
+        path: |
+          steamcmd
+          haydee_game
+        key: haydee-tools-windows-v2
 
-    # 2. Download SteamCMD (executed only if cache is not found)
+    # 2. Download SteamCMD (only if cache is not found)
     - name: Download SteamCMD
-      # if: steps.cache-haydee.outputs.cache-hit != 'true'
+      if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
         Write-Host "Cache not found. Downloading SteamCMD..."
@@ -48,37 +47,27 @@ runs:
         Expand-Archive -Path "steamcmd.zip" -DestinationPath "steamcmd" -Force
 
     - name: Bootstrap SteamCMD
-      # if: steps.cache-haydee.outputs.cache-hit != 'true'
+      if: steps.cache-haydee.outputs.cache-hit != 'true'
       continue-on-error: true
       shell: pwsh
       run: .\steamcmd\steamcmd.exe +quit
 
-    # 3. Pre-requisite for packer.exe (Haydee.dll requires DirectX & VCRedist)
+    # 3. Install system dependencies for packer.exe
     - name: Install System Dependencies for packer.exe
       shell: pwsh
       run: |
-        Write-Host "Installing Visual C++ Redistributables (vcredist140) and DirectX via Chocolatey..."
-        choco install vcredist140 directx -y --no-progress
+        Write-Host "Installing all Visual C++ Redistributables and DirectX via Chocolatey..."
+        choco install vcredist-all directx -y --no-progress
 
-    # 4. Download game to get packer.exe (also only on cache miss)
+    # 4. Download game to get packer.exe (only if cache is not found)
     - name: Download Haydee (Tools)
-      # if: steps.cache-haydee.outputs.cache-hit != 'true'
+      if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
         Write-Host "Downloading Haydee game files..."
-        .\steamcmd\steamcmd.exe +force_install_dir "..\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
+        .\steamcmd\steamcmd.exe +force_install_dir "$env:GITHUB_WORKSPACE\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
 
-    # 5. Fix missing DLLs for packer.exe
-    - name: Copy dependencies for packer.exe
-      shell: pwsh
-      run: |
-        Write-Host "Copying dependencies from SteamCMD..."
-        $dlls = @("tier0_s.dll", "vstdlib_s.dll", "steamclient.dll", "tier0_s64.dll", "vstdlib_s64.dll", "steamclient64.dll")
-        foreach ($dll in $dlls) {
-            Copy-Item -Path ".\steamcmd\$dll" -Destination ".\haydee_game\$dll" -ErrorAction SilentlyContinue
-        }
-
-    # 6. Pack folder into .pack file
+    # 5. Pack folder into .pack file
     - name: Run Haydee packer.exe
       shell: cmd
       run: |
@@ -87,14 +76,22 @@ runs:
         (
         echo ${{ inputs.pack_name }}
         echo ${{ inputs.priority }}
-        ) | packer.exe "..\\${{ inputs.folder }}"
+        ) | packer.exe "%GITHUB_WORKSPACE%\${{ inputs.folder }}"
 
     # 6. Prepare folder for Workshop submission
     - name: Prepare Workshop Content Folder
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Force -Path "workshop_content"
-        Move-Item -Path "${{ inputs.pack_name }}" -Destination "workshop_content\"
+        # Check both possible paths where packer.exe might have saved the file
+        if (Test-Path "haydee_game\${{ inputs.pack_name }}") {
+            Move-Item -Path "haydee_game\${{ inputs.pack_name }}" -Destination "workshop_content\" -Force
+        } elseif (Test-Path "${{ inputs.pack_name }}") {
+            Move-Item -Path "${{ inputs.pack_name }}" -Destination "workshop_content\" -Force
+        } else {
+            Write-Error "Pack file ${{ inputs.pack_name }} not found!"
+            exit 1
+        }
 
     # 7. Generate workshop.vdf manifest
     - name: Create .vdf file
