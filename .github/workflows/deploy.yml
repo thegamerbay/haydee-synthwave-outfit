@@ -13,20 +13,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Copy the necessary folders into the temporary Build directory,
-      # so that README.md and LICENSE files do not get into the game archive.
-      - name: Prepare Staging Folder
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path "Build"
-          Copy-Item -Path "Outfits" -Destination "Build\Outfits" -Recurse
-
-      # Run our cached action
       - name: Upload Mod via haydee-upload
         uses: ./.github/actions/haydee-upload
         with:
           id: '3670764079'
-          folder: 'Build'
+          folder: 'Outfits'
           pack_name: 'SynthwaveOutfit.pack'
           priority: '2'
           changelog: 'Release ${{ github.ref_name }}'
