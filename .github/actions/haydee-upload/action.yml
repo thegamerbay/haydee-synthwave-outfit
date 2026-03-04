@@ -57,8 +57,8 @@ runs:
     - name: Install System Dependencies for packer.exe
       shell: pwsh
       run: |
-        Write-Host "Installing older Visual C++ Redistributables via Chocolatey..."
-        choco install vcredist2013 vcredist2012 vcredist2010 vcredist2008 -y --no-progress
+        Write-Host "Installing Visual C++ Redistributables (vcredist140) via Chocolatey..."
+        choco install vcredist140 -y --no-progress
 
     # 4. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
