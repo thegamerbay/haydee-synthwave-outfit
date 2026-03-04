@@ -39,14 +39,19 @@ runs:
     #     key: haydee-tools-windows-v1
 
     # 2. Download SteamCMD (executed only if cache is not found)
-    - name: Download and Setup SteamCMD
+    - name: Download SteamCMD
       # if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
         Write-Host "Cache not found. Downloading SteamCMD..."
         Invoke-WebRequest -Uri "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip" -OutFile "steamcmd.zip"
         Expand-Archive -Path "steamcmd.zip" -DestinationPath "steamcmd" -Force
-        .\steamcmd\steamcmd.exe +quit
+
+    - name: Bootstrap SteamCMD
+      # if: steps.cache-haydee.outputs.cache-hit != 'true'
+      continue-on-error: true
+      shell: pwsh
+      run: .\steamcmd\steamcmd.exe +quit
 
     # 3. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
