@@ -54,15 +54,11 @@ runs:
       run: .\steamcmd\steamcmd.exe +quit
 
     # 3. Pre-requisite for packer.exe: Install Visual C++ Redistributable
-    - name: Install Visual C++ Redistributable
+    - name: Install System Dependencies for packer.exe
       shell: pwsh
       run: |
-        Write-Host "Downloading Visual C++ Redistributable..."
-        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "vc_redist.x64.exe"
-        Write-Host "Installing silently..."
-        Start-Process -FilePath "vc_redist.x64.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
-        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x86.exe" -OutFile "vc_redist.x86.exe"
-        Start-Process -FilePath "vc_redist.x86.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
+        Write-Host "Installing older Visual C++ Redistributables via Chocolatey..."
+        choco install vcredist2013 vcredist2012 vcredist2010 vcredist2008 -y --no-progress
 
     # 4. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
