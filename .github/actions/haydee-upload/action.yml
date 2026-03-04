@@ -68,7 +68,15 @@ runs:
         Write-Host "Downloading Haydee game files..."
         .\steamcmd\steamcmd.exe +force_install_dir "..\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
 
-    # 5. Pack folder into .pack file
+    # 5. Fix missing DLLs for packer.exe
+    - name: Copy dependencies for packer.exe
+      shell: pwsh
+      run: |
+        Write-Host "Copying tier0_s.dll and vstdlib_s.dll from SteamCMD..."
+        Copy-Item -Path ".\steamcmd\tier0_s.dll" -Destination ".\haydee_game\tier0_s.dll" -ErrorAction SilentlyContinue
+        Copy-Item -Path ".\steamcmd\vstdlib_s.dll" -Destination ".\haydee_game\vstdlib_s.dll" -ErrorAction SilentlyContinue
+
+    # 6. Pack folder into .pack file
     - name: Run Haydee packer.exe
       shell: cmd
       run: |
