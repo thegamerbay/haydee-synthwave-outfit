@@ -10,7 +10,7 @@ inputs:
     description: "Workshop item id (specify 0 if this is a new mod)"
     required: true
   folder:
-    description: "Folder name with prepared mod files (e.g. 'Build')"
+    description: "Folder name(s) with prepared mod files (e.g. 'Outfits' or 'Outfits, Maps, Items' or 'Outfits Maps')"
     required: true
   pack_name:
     description: "Resulting file name (e.g. 'SynthwaveOutfit.pack')"
@@ -67,11 +67,11 @@ runs:
         Write-Host "Downloading Haydee game files..."
         .\steamcmd\steamcmd.exe +force_install_dir "$env:GITHUB_WORKSPACE\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
 
-    # 5. Pack folder into .pack file (with protection against fake packer)
+    # 5. Pack folder(s) into .pack file (with protection against fake packer)
     - name: Run Haydee packer.exe
       shell: pwsh
       run: |
-        Write-Host "Packing folder: ${{ inputs.folder }}"
+        Write-Host "Packing folder(s): ${{ inputs.folder }}"
         
         # Accurately find the correct Haydee packer.exe in the downloaded files
         $packerPath = Get-ChildItem -Path "haydee_game" -Filter "packer.exe" -Recurse | Select-Object -First 1
@@ -81,18 +81,50 @@ runs:
         }
         Write-Host "Found Haydee packer at: $($packerPath.FullName)"
         
+        # Handle multiple folders by creating a unified staging directory
+        $foldersInput = "${{ inputs.folder }}"
+        $folders = $foldersInput -split '[,; ]+' | Where-Object { $_ -ne '' }
+        
+        $packTarget = "$env:GITHUB_WORKSPACE\${{ inputs.folder }}"
+        $isMultiFolder = $folders.Count -gt 1
+        
+        if ($isMultiFolder) {
+            Write-Host "Multiple folders detected. Creating temporary staging directory 'HaydeeWorkshopArchive'..."
+            $stagingDir = "$env:GITHUB_WORKSPACE\HaydeeWorkshopArchive"
+            New-Item -ItemType Directory -Force -Path $stagingDir | Out-Null
+            
+            foreach ($f in $folders) {
+                $sourcePath = "$env:GITHUB_WORKSPACE\$f"
+                if (Test-Path $sourcePath) {
+                    Write-Host "Copying $f to staging directory..."
+                    Copy-Item -Path $sourcePath -Destination $stagingDir -Recurse -Force
+                } else {
+                    Write-Warning "Folder '$f' not found! Skipping..."
+                }
+            }
+            $packTarget = $stagingDir
+        }
+        
         # Create a bat file to reliably pass the input stream to this specific utility
         $batContent = @"
         @echo off
         (
         echo ${{ inputs.pack_name }}
         echo ${{ inputs.priority }}
-        ) | "$($packerPath.FullName)" "$env:GITHUB_WORKSPACE\${{ inputs.folder }}"
+        ) | "$($packerPath.FullName)" "$packTarget"
         "@
         Set-Content -Path "run_packer.bat" -Value $batContent
         
         cmd.exe /c "run_packer.bat"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        $exitCode = $LASTEXITCODE
+        
+        # Cleanup staging directory if created
+        if ($isMultiFolder -and (Test-Path $stagingDir)) {
+            Write-Host "Cleaning up staging directory..."
+            Remove-Item -Path $stagingDir -Recurse -Force
+        }
+        
+        if ($exitCode -ne 0) { exit $exitCode }
 
     # 6. Prepare folder for Workshop submission
     - name: Prepare Workshop Content Folder
