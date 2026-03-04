@@ -53,7 +53,18 @@ runs:
       shell: pwsh
       run: .\steamcmd\steamcmd.exe +quit
 
-    # 3. Download game to get packer.exe (also only on cache miss)
+    # 3. Pre-requisite for packer.exe: Install Visual C++ Redistributable
+    - name: Install Visual C++ Redistributable
+      shell: pwsh
+      run: |
+        Write-Host "Downloading Visual C++ Redistributable..."
+        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "vc_redist.x64.exe"
+        Write-Host "Installing silently..."
+        Start-Process -FilePath "vc_redist.x64.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
+        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x86.exe" -OutFile "vc_redist.x86.exe"
+        Start-Process -FilePath "vc_redist.x86.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
+
+    # 4. Download game to get packer.exe (also only on cache miss)
     - name: Download Haydee (Tools)
       # if: steps.cache-haydee.outputs.cache-hit != 'true'
       shell: pwsh
@@ -61,7 +72,7 @@ runs:
         Write-Host "Downloading Haydee game files..."
         .\steamcmd\steamcmd.exe +force_install_dir "..\haydee_game" +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +app_update 530890 validate +quit
 
-    # 4. Pack folder into .pack file
+    # 5. Pack folder into .pack file
     - name: Run Haydee packer.exe
       shell: cmd
       run: |
@@ -72,14 +83,14 @@ runs:
         echo ${{ inputs.priority }}
         ) | packer.exe "..\\${{ inputs.folder }}"
 
-    # 5. Prepare folder for Workshop submission
+    # 6. Prepare folder for Workshop submission
     - name: Prepare Workshop Content Folder
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Force -Path "workshop_content"
         Move-Item -Path "${{ inputs.pack_name }}" -Destination "workshop_content\"
 
-    # 6. Generate workshop.vdf manifest
+    # 7. Generate workshop.vdf manifest
     - name: Create .vdf file
       shell: pwsh
       run: |
@@ -93,14 +104,14 @@ runs:
         "@
         Set-Content -Path "workshop.vdf" -Value $vdfContent
 
-    # 7. Upload to Steam Workshop
+    # 8. Upload to Steam Workshop
     - name: Run SteamCMD to Upload
       shell: pwsh
       run: |
         Write-Host "Uploading to Steam Workshop..."
         .\steamcmd\steamcmd.exe +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +workshop_build_item "$((Get-Item "workshop.vdf").FullName)" +quit
 
-    # 8. Print errors (if process fails)
+    # 9. Print errors (if process fails)
     - name: Print Errors on Failure
       if: failure()
       shell: pwsh
