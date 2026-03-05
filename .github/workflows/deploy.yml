@@ -13,8 +13,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Upload Mod via haydee-upload
-        uses: ./.github/actions/haydee-upload
+      - name: Upload Mod to Steam Workshop
+        uses: thegamerbay/haydee-workshop-upload@v1
         with:
           id: '3670764079'
           folder: 'Outfits'
